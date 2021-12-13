@@ -1,0 +1,106 @@
+apply plugin: "com.android.library"
+apply plugin: 'kotlin-android'
+apply plugin: "maven-publish"
+
+android {
+    compileSdkVersion "$COMPILE_SDK_VERSION" as int
+
+    defaultConfig {
+        minSdkVersion "$MIN_SDK_VERSION" as int
+        versionCode 16
+        versionName "0.0.16"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        externalNativeBuild {
+            cmake {
+                abiFilters 'armeabi-v7a', 'arm64-v8a'
+            }
+        }
+    }
+
+    testOptions {
+        unitTests.returnDefaultValues = true
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
+        }
+    }
+
+    useLibrary 'android.test.runner'
+    useLibrary 'android.test.base'
+    useLibrary 'android.test.mock'
+}
+
+dependencies {
+    implementation fileTree(dir: "libs", include: ["*.jar", "*.aar"])
+    implementation "androidx.appcompat:appcompat:$ANDROIDX_APPCOMPAT_VERSION"
+    implementation "androidx.annotation:annotation:$ANDROIDX_ANNOTATION_VERSION"
+    implementation "androidx.core:core-ktx:$KTX_CORE_VERSION"
+    implementation("androidx.activity:activity-ktx:$ANDROIDX_KTX_ACTIVITY")
+    implementation("androidx.fragment:fragment-ktx:$ANDROIDX_KTX_FRAGMENT")
+    implementation("androidx.lifecycle:lifecycle-extensions:$ANDROIDX_LIFECYCLE")
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$KOTLIN_VERSION"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$COROUTINES_VERSION"
+}
+
+task sourceJar(type: Jar) {
+    dependsOn {
+        clean
+        assembleRelease
+    }
+    from android.sourceSets.main.java.srcDirs
+    classifier "sources"
+}
+
+publishing {
+    repositories {
+        maven {
+            url ""
+            credentials {
+                username ""
+                password ""
+            }
+        }
+    }
+    publications {
+        product(MavenPublication) {
+            groupId "com.xiaoma"                                // 组件群组
+            artifactId "frameanim"                              // 组件名
+            version android.defaultConfig.versionName           // 组件版本
+            components { "release" }
+            // 源码
+            artifact(sourceJar) {
+                classifier "sources"
+                extension "jar"
+            }
+            // aar包
+            artifact("$buildDir/outputs/aar/XMFrameAnim-release.aar") {
+                extension "aar"
+            }
+            // 依赖传递
+            pom.withXml {
+                def dependenciesNode = asNode().appendNode('dependencies')
+                configurations.implementation.allDependencies.withType(ModuleDependency) {
+                    ModuleDependency dp ->
+                        if (dp.version != "unspecified") { // 过滤项目内library引用
+                            def dependencyNode = dependenciesNode.appendNode('dependency')
+                            dependencyNode.appendNode('groupId', dp.group)
+                            dependencyNode.appendNode('artifactId', dp.name)
+                            dependencyNode.appendNode('version', dp.version)
+                            // for exclusions
+                            if (dp.excludeRules.size() > 0) {
+                                def exclusions = dependencyNode.appendNode('exclusions')
+                                dp.excludeRules.each { ExcludeRule ex ->
+                                    def exclusion = exclusions.appendNode('exclusion')
+                                    exclusion.appendNode('groupId', ex.group)
+                                    exclusion.appendNode('artifactId', ex.module)
+                                }
+                            }
+                        }
+                }
+            }
+        }
+    }
+}

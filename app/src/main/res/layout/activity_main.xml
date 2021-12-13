@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:XMFrameAnim="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    tools:context=".MainActivity">
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:id="@+id/ll_operation_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/btn_load_resource_frame_animation"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="加载Resource帧动画"/>
+
+        <Button
+            android:id="@+id/btn_load_asset_sprite"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toTopOf="parent"
+            android:layout_below="@+id/btn_load_resource_frame_animation"
+            app:layout_constraintLeft_toLeftOf="@+id/btn_load_resource_frame_animation"
+            android:text="加载Asset精灵动画"/>
+
+
+    </androidx.appcompat.widget.LinearLayoutCompat>
+
+    <com.xiaoma.frameanim.FrameAnimSurfaceView
+        android:id="@+id/frame_animation_texture_view"
+        android:layout_width="300px"
+        android:layout_height="300px"
+        android:layout_marginTop="100px"
+        android:layout_below="@+id/ll_operation_container"
+        XMFrameAnim:scaleType="centerCrop" />
+
+</RelativeLayout>
