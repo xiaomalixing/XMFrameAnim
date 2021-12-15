@@ -40,7 +40,7 @@
 	// 通过ResourceId创建一个普通的帧动画
 	IFrameAnim anim = FrameAnimFactory.createWithResIds(context, frameResIds);
 	// 类似的, 也可以创建精灵动画
-	// IFrameAnim animSprite1 = 	FrameAnimFactory.createWithSprite("vpa/frames/1-1/03", ResourceType.ASSETS);   // Assets资源
+	// IFrameAnim animSprite1 = FrameAnimFactory.createWithSprite("vpa/frames/1-1/03", ResourceType.ASSETS);   // Assets资源
 	// IFrameAnim animSprite2 = FrameAnimFactory.createWithSprite("sdcard/frames/1-1/03", ResourceType.FILE);  // 普通磁盘文件
 	anim.setOneShot(false);  // 设置是否播放一次
 	view.addFrameAnim(anim); // 将当前动画添加到渲染器中
